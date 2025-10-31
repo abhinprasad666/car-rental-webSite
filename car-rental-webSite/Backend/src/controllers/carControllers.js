@@ -215,62 +215,96 @@ export const getSingleCar = async (req, res) => {
 export const updateCar = async (req, res) => {
   try {
     const carId = req.params.id;
-    const { name, brand, category, fuelType, transmission, available, image } = req.body;
+    const file = req.file?.path; // ✅ Read uploaded file
+    console.log("updagte data",req.body)
+    const {
+      name,
+      brand,
+      category,
+      fuelType,
+      transmission,
+      available,
+      price,
+      location,
+      seats,
+      description,
+    } = req.body;
 
-    // Check if car exists
+    // ✅ Check if car exists
     const car = await Car.findById(carId);
     if (!car) {
       return res.status(404).json({
         success: false,
-        error: "Car not found",
+        error: "Car not found.",
       });
     }
 
-     let imageUrl = "";
-    if (file) {
-        try {
-            const uploadedResult = await cloudinary.uploader.upload(file, {
-                folder: "easy-drive/cars",
-                resource_type: "image",
-            });
-            console.log("uplodresult",uploadedResult)
-            imageUrl = uploadedResult.secure_url;
-        } catch (error) {
-            res.status(500).json({
-              success:false,
-              error:"Image upload failed. Please try again."
-            })
-           
-        }
+    // ✅ Check if category exists (if provided)
+    if (category && !mongoose.isValidObjectId(category)) {
+      return res.status(400).json({
+        success: false,
+        error: "Invalid category ID.",
+      });
     }
 
-    // Update fields if provided
+    if (category) {
+      const categoryExists = await Category.findById(category);
+      if (!categoryExists) {
+        return res.status(404).json({
+          success: false,
+          error: "Category not found.",
+        });
+      }
+    }
+
+    // ✅ Upload new image if provided
+    let imageUrl = car.image; // keep old image by default
+    if (file) {
+      try {
+        const uploadedResult = await cloudinary.uploader.upload(file, {
+          folder: "easy-drive/cars",
+          resource_type: "image",
+        });
+        imageUrl = uploadedResult.secure_url;
+      } catch (uploadError) {
+        console.error("Cloudinary upload error:", uploadError);
+        return res.status(500).json({
+          success: false,
+          error: "Image upload failed. Please try again.",
+        });
+      }
+    }
+
+    // ✅ Update all fields safely
     car.name = name || car.name;
     car.brand = brand || car.brand;
     car.category = category || car.category;
     car.fuelType = fuelType || car.fuelType;
     car.transmission = transmission || car.transmission;
     car.available = available !== undefined ? available : car.available;
-    car.image = image || car.image;
+    car.price = price || car.price;
+    car.location = location || car.location;
+    car.seats = seats || car.seats;
+    car.description = description || car.description;
+    car.image = imageUrl; // ✅ updated or old image
 
-
-
-    // Save updated car
+    // ✅ Save updated car
     const updatedCar = await car.save();
 
     res.status(200).json({
       success: true,
-      message: "Car updated successfully",
+      message: "Car updated successfully.",
       car: updatedCar,
     });
   } catch (error) {
     console.error("Error updating car:", error);
     res.status(500).json({
       success: false,
-      error: "Internal Server Error",
+      error: "Internal Server Error.",
     });
   }
 };
+
 
 
 

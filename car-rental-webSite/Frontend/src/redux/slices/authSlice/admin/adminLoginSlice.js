@@ -23,7 +23,7 @@ const authSlice = createSlice({
             state.user = action.payload.user;
             state.isAdminLogin = true;
             state.loginMessage = true;
-            sessionStorage.setItem("admin", "true");
+             localStorage.setItem("admin","true");
         },
         loginFail: (state, action) => {
             state.loading = false;

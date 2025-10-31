@@ -9,7 +9,6 @@ import { useSelector } from "react-redux";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
-  const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(true); 
   const navigate = useNavigate();
   const { user } = useSelector((state) => state.auth);
 
@@ -18,8 +17,10 @@ export default function Navbar() {
     setIsOpen(false);
   };
 
-  //  Show admin buttons only if user.role === "admin"
-  const showAdminButtons = user?.role === "admin";
+  // ✅ Admin conditions
+  const adminInLocal = localStorage.getItem("admin") === "true";
+  const isAdminUser = user?.role === "admin";
+  const showAdminDashboard = isAdminUser && adminInLocal;
 
   return (
     <nav className="fixed top-0 left-0 w-full z-50 backdrop-blur-md bg-white/70 dark:bg-gray-800/70 shadow-md transition-all">
@@ -38,9 +39,9 @@ export default function Navbar() {
           <NavLinks handleNavigate={handleNavigate} />
           <DarkModeToggle />
 
-          {/* Admin Logic: Only show if user is admin */}
-          {showAdminButtons && (
-            isAdminLoggedIn ? (
+          {/* ✅ Admin Logic */}
+          {isAdminUser && (
+            showAdminDashboard ? (
               <button
                 onClick={() => handleNavigate("/admin/dashboard")}
                 className="flex items-center space-x-1 text-gray-800 dark:text-gray-200 hover:text-sky-500 dark:hover:text-sky-400 transition"
@@ -117,9 +118,9 @@ export default function Navbar() {
               <span>Booking</span>
             </button>
 
-            {/* 👇 Mobile Admin Logic */}
-            {showAdminButtons && (
-              isAdminLoggedIn ? (
+            {/* ✅ Mobile Admin Logic */}
+            {isAdminUser && (
+              showAdminDashboard ? (
                 <button
                   onClick={() => handleNavigate("/admin/dashboard")}
                   className="flex items-center space-x-2 text-gray-800 dark:text-gray-200 hover:text-sky-500 dark:hover:text-sky-400 transition"

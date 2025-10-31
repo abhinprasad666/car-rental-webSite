@@ -7,7 +7,7 @@ export const adminLogin = (userData) => async (dispatch) => {
     try {
         dispatch(loginRequest());
 
-        const { data } = await axiosInstance.post("api/v1/auth/admin/login", userData);
+        const { data } = await axiosInstance.post("api/v1/admin/login",userData);
            sessionStorage.setItem("admin", "true");
         dispatch(loginSuccess(data));
     } catch (error) {

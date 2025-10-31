@@ -19,9 +19,9 @@ carRouter.get("/",getAllCars)
 // Get Car By Id 
 carRouter.get("/:id",getSingleCar)
 // Update Car
-carRouter.put("/",protectRouter,isDealerOrAdmin,upload.single("image"),updateCar)
+carRouter.put("/:id",protectRouter,isDealerOrAdmin,upload.single("image"),updateCar)
 // Delete Car
-carRouter.delete("/",protectRouter,isDealerOrAdmin,deleteCar)
+carRouter.delete("/:id",protectRouter,isDealerOrAdmin,deleteCar)
 
 //  Route to get all featured cars
 carRouter.post("/featured", getFeaturedCars);

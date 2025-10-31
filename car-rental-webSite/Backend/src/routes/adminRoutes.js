@@ -1,5 +1,5 @@
 import express, { Router } from "express";
-import {  changeRole, deleteUserOrSeller,getAllDealers,getAllUsers, getUserOrDealer, } from "../controllers/adminControllers.js";
+import {  changeRole, deleteUserOrSeller,getAdminDashboardStats,getAllDealers,getAllUsers, getUserOrDealer, } from "../controllers/adminControllers.js";
 import { isAdminLogin } from "../middlewares/isAdminLogin.js";
 import { logIn } from "../controllers/authControllers.js";
 import { protectRouter } from "../middlewares/protectRouter.js";
@@ -16,7 +16,7 @@ export const adminRouter = Router()
 adminRouter.post("/login",isAdminLogin,logIn)
 
 // Get All Users 
-adminRouter.get("/getallusers",protectRouter,isAdmin,getAllUsers)
+adminRouter.get("/all-users",protectRouter,isAdmin,getAllUsers)
 
 // Get All Dealers
 adminRouter.get("/getalldealers",protectRouter,isAdmin,getAllDealers)
@@ -28,9 +28,10 @@ adminRouter.get("/:id",protectRouter,isAdmin,getUserOrDealer)
 adminRouter.put("/update/:userId/:role",protectRouter,isAdmin,changeRole)
 
 
-adminRouter.delete("/:id",protectRouter,isAdmin,deleteUserOrSeller)
+adminRouter.delete("/user/:id",protectRouter,isAdmin,deleteUserOrSeller)
 
 
 
+adminRouter.post("/status",protectRouter,isAdmin, getAdminDashboardStats)
 
 

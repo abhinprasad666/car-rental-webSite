@@ -1,12 +1,15 @@
 import User from "../models/userModel.js";
 import Dealer from "../models/dealerModel.js";
-
+import Booking from "../models/bookingModel.js";
+import Payment from "../models/paymentModel.js";
+import Car from "../models/carModel.js";
 
 
 
 //  Change Role (user -> dealer OR dealer -> user)
 
 export const changeRole = async (req, res) => {
+  console.log("i am stats")
     try {
        
         const  userId = req.params.userId
@@ -45,7 +48,7 @@ if (!allowedRoles.includes(role)) {
 //  Get all Users
 export const getAllUsers = async (req, res) => {
     try {
-        const users = await User.find({ role: "user" }).select("-password"); 
+        const users = await User.find().select("-password"); 
         res.status(200).json({
             success: true,
             count: users.length,
@@ -141,6 +144,67 @@ export const deleteUserOrSeller = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Internal Server Error",
+      error: error.message,
+    });
+  }
+};
+
+
+
+// 🧠 Admin Dashboard Stats
+export const getAdminDashboardStats = async (req, res) => {
+    console.log("i am status")
+  try {
+    // Total Users
+    const totalUsers = await User.countDocuments();
+
+    // Total Cars
+    const totalCars = await Car.countDocuments();
+
+    // Total Bookings
+    const totalBookings = await Booking.countDocuments();
+
+    // Total Earnings (sum of all successful payments)
+    const totalEarningsResult = await Payment.aggregate([
+      {
+        $match: {
+          status: { $in: ["confirmed", ] },
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          totalAmount: { $sum: "$amount" },
+        },
+      },
+    ]);
+
+    const totalEarnings =
+      totalEarningsResult.length > 0 ? totalEarningsResult[0].totalAmount : 0;
+
+    // Recent Bookings (last 5)
+    const recentBookings = await Booking.find()
+      .populate("userId", "name email")
+      .populate("carId", "name brand")
+      .sort({ createdAt: -1 })
+      .limit(5);
+
+    // Final Response
+    res.status(200).json({
+      success: true,
+      stats: {
+        totalUsers,
+        totalCars,
+        totalBookings,
+        totalEarnings,
+      },
+      recentBookings,
+    });
+  } catch (error) {
+    console.error("Dashboard Stats Error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch dashboard stats",
       error: error.message,
     });
   }

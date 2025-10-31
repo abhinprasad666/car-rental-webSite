@@ -15,7 +15,12 @@ import BookingHistory from "../pages/userPages/CustomerProfile/BookingHistory";
 import ProtectedRoute from "./ProtectedRoute";
 import AdminLogin from "../pages/authpages/admin/adminLogin";
 import AdminLayout from "../layouts/adminLayout/AdminLayout";
-import DashboardStats from "../components/admin/dashboard/DashboardStats";
+import Dashboard from "../pages/adminpages/Dashboard/Dashboard";
+import AddCar from "../pages/adminpages/Add Car/AddCar";
+import ManageCars from "../pages/adminpages/Manage Bookings/ManageCars";
+import ManageBookings from "../pages/adminpages/Manage Cars/ManageBookings";
+import ManageUsers from "../pages/adminpages/ManageUsers/ManageUsers";
+import UpdateCar from "../pages/adminpages/UpdateCar/UpdateCar";
 
 
 // ─── Router Setup ─────────────────────────────────────────────────────────
@@ -43,14 +48,24 @@ const router = createBrowserRouter([
     ],
   },
   // ─── Admin Routes ──────────────────────────────────────────
-  {
+{
     path: "/admin",
-    element: <AdminLayout />,
     children: [
-      { path: "dashboard", element: <DashboardStats /> },
+      { path: "login", element: <AdminLogin /> },
+      {
+        element: <AdminLayout />,
+        children: [
+          { path: "dashboard", element: <Dashboard /> },
+          { path: "add-car", element: <AddCar /> },
+          { path: "manage-cars", element: <ManageCars /> },
+          { path: "manage-bookings", element: <ManageBookings /> },
+             { path: "manage-users", element: <ManageUsers /> },
+               { path: "edit-car/:id", element: <UpdateCar/>},
+          
+        ],
+      },
     ],
   },
-  
 
   
   // ─── Auth Routes ────────────────────────────────────────────
@@ -69,7 +84,6 @@ const router = createBrowserRouter([
   //   element: <AuthLayout />,
   //   children: [{ path: "", element: <AdminLogin/> }],
   // },
-
 
   
  
